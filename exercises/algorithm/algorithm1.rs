@@ -2,7 +2,6 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -69,13 +68,50 @@ impl<T> LinkedList<T> {
             },
         }
     }
+    pub fn add_node(&mut self, node: Option<NonNull<Node<T>>>) {
+        match self.end {
+            None => self.start = node,
+            Some(next_ptr) => {
+                unsafe { (*next_ptr.as_ptr()).next = node };
+            },
+        };
+        self.end = node;
+    }
+
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
+        where T: PartialOrd
 	{
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+        let mut out_list = LinkedList::<T>::new();
+        let mut list_a_node = list_a.start;
+        let mut list_b_node = list_b.start;
+        loop {
+            if list_b_node.is_none() && list_a_node.is_none() {
+                break;
+            }
+            if list_b_node.is_none() {
+                let next = unsafe {(*list_a_node.unwrap().as_ptr()).next };
+                out_list.add_node(list_a_node);
+                list_a_node = next;
+            } else if list_a_node.is_none() {
+                let next = unsafe {(*list_b_node.unwrap().as_ptr()).next };
+                out_list.add_node(list_b_node);
+                list_b_node = next;
+            } else {
+                let a = unsafe{ &list_a_node.unwrap().as_ref().val};
+                let b = unsafe{ &list_b_node.unwrap().as_ref().val};
+                if a > b {
+                    let next = unsafe {(*list_b_node.unwrap().as_ptr()).next };
+                    out_list.add_node(list_b_node);
+                    list_b_node = next;
+                } else {
+                    let next = unsafe {(*list_a_node.unwrap().as_ptr()).next };
+                    out_list.add_node(list_a_node);
+                    list_a_node = next;
+                }
+            }
+            out_list.length += 1;
         }
+		out_list
 	}
 }
 

@@ -3,11 +3,34 @@
 	This problem requires you to implement a sorting algorithm
 	you can use bubble sorting, insertion sorting, heap sorting, etc.
 */
-// I AM NOT DONE
 
-fn sort<T>(array: &mut [T]){
-	//TODO
+fn sort<T>(array: &mut [T])
+    where T: PartialOrd + std::fmt::Debug + std::fmt::Display
+{
+	if array.len() == 1 {
+        ()
+    }
+    let mut pos = 0;
+    let last_idx = array.len() - 1;
+    let mid = (last_idx) / 2;
+
+    array.swap(mid, last_idx);
+    for i in 0..last_idx {
+        if array[i] < array[last_idx] {
+            array.swap(i, pos);
+            pos += 1;
+        }
+    }
+    array.swap(pos, last_idx);
+
+    if pos != 0 {
+        sort(&mut array[0..pos]);
+    }
+    if pos != last_idx {
+        sort(&mut array[pos+1..]);
+    }
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
